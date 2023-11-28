@@ -6,9 +6,10 @@ import collections
 
 
 FOUNDATION_YEAR = 1920
+WINES_DATA_FILEPATH = './winesdata.xlsx'
 
 
-def year_with_tail(num):
+def get_year_with_tail(num):
     tail = 'год'
     if (((num % 10) == 0)
             or ((num % 10) in range(5, 10))
@@ -19,15 +20,14 @@ def year_with_tail(num):
     return (f"{num} {tail}")
 
 
-def load_wines_from_xlsx(filename):
-    data = (
-        pandas.read_excel(filename, sheet_name='Лист1')
-        .fillna('').to_dict(orient='records')
+def load_wines_from_xlsx(filepath):
+    wines = (
+        pandas.read_excel(filepath, sheet_name='Лист1')
+        .fillna('').values.tolist()
     )
     result = collections.defaultdict(list)
-    for record in data:
-        key = record.pop('Категория')
-        result[key].append(record)
+    for category, *wine in wines:
+        result[category].append(wine)
     return result
 
 
@@ -38,8 +38,8 @@ if __name__ == '__main__':
     template = env.get_template('template.html')
 
     rendered_page = template.render(
-        years=year_with_tail(datetime.now().year - FOUNDATION_YEAR),
-        wines=load_wines_from_xlsx('wine3.xlsx'),
+        years=get_year_with_tail(datetime.now().year - FOUNDATION_YEAR),
+        wines=load_wines_from_xlsx(WINES_DATA_FILEPATH),
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
