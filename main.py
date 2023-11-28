@@ -40,6 +40,7 @@ if __name__ == '__main__':
         default='winesdata.xlsx', nargs='?',
     )
     args = parser.parse_args()
+    winesdata_filepath = args.filepath
 
     env = Environment(loader=FileSystemLoader('.'),
                       autoescape=select_autoescape(['html', 'xml']))
@@ -48,7 +49,7 @@ if __name__ == '__main__':
 
     rendered_page = template.render(
         years=get_year_with_tail(datetime.now().year - FOUNDATION_YEAR),
-        wines=load_wines_from_xlsx(args.filepath),
+        wines=load_wines_from_xlsx(winesdata_filepath),
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
