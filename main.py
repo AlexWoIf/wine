@@ -3,10 +3,10 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from datetime import datetime
 import pandas
 import collections
+import argparse
 
 
 FOUNDATION_YEAR = 1920
-WINES_DATA_FILEPATH = './winesdata.xlsx'
 
 
 def get_year_with_tail(num):
@@ -32,6 +32,15 @@ def load_wines_from_xlsx(filepath):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Укажите имя Excel файла с данными'
+    )
+    parser.add_argument(
+        'filepath', help="Путь и название файла",
+        default='winesdata.xlsx', nargs='?',
+    )
+    args = parser.parse_args()
+
     env = Environment(loader=FileSystemLoader('.'),
                       autoescape=select_autoescape(['html', 'xml']))
 
@@ -39,7 +48,7 @@ if __name__ == '__main__':
 
     rendered_page = template.render(
         years=get_year_with_tail(datetime.now().year - FOUNDATION_YEAR),
-        wines=load_wines_from_xlsx(WINES_DATA_FILEPATH),
+        wines=load_wines_from_xlsx(args.filepath),
     )
 
     with open('index.html', 'w', encoding="utf8") as file:
